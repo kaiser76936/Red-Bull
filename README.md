@@ -2,8 +2,8 @@
 Projeto pessoal de check de red bull
 
 # Tecnologias do projeto
-- Base de Dados: MySQL/pgAdmin
-- Backend: Node.js
+- Base de Dados: PostgreSQL
+- Backend: Flask
 - Frontend: React
 
 # Requisitos
@@ -23,15 +23,23 @@ pg_ctl stop -D "D:\Program Files\PostgreSQL\17\data" #desligar
 ```
 # na diretoria api
 
-python -m venv venv
-venv\Scripts\activate
+python -m venv venv     # cria venv
+venv\Scripts\activate   ## ativa venv
 
-pip install --upgrade pip
-pip install -r requirements.txt
+pip install --upgrade pip           # atualiza pip
+pip install -r requirements.txt     # instala as dependências
 
-pip freeze
+pip freeze                          # lista as dependências instaladas
 
-flask run
+flask run                           ## inicia o servidor Flask
+
+## -> comandos a usar para lançar normalmente com tudo instalado
+```
+# Instalar e iniciar o frontend
+```
+npm install
+
+npm run dev
 ```
 
 # Estrutura do projeto

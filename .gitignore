@@ -1,6 +1,9 @@
 # Ambiente virtual
 api/venv
 
+#node_modules
+node_modules/
+
 # Cache Python
 __pycache__/
 *.py[cod]

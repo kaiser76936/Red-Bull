@@ -1,0 +1,37 @@
+/* EdicaoCard.css */
+.card {
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.card img {
+  width: 150px;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.card-content {
+  flex-grow: 1;
+}
+
+.card-content h2 {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+}
+
+.card-content p {
+  margin: 4px 0;
+}
+
+.card-content a {
+  margin-top: 10px;
+  display: inline-block;
+  font-weight: 600;
+}
