@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createEdicao } from '../api'; 
 
 export default function AddEdicaoForm() {
   const navigate = useNavigate();
@@ -7,8 +8,8 @@ export default function AddEdicaoForm() {
     name: '',
     description: '',
     flavors: '',
-    image_url: '',
   });
+  const [imageFile, setImageFile] = useState(null);
   const [error, setError] = useState(null);
 
   const handleChange = (e) => {
@@ -16,6 +17,9 @@ export default function AddEdicaoForm() {
       ...prev,
       [e.target.name]: e.target.value
     }));
+  };
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
@@ -28,17 +32,17 @@ export default function AddEdicaoForm() {
     }
 
     try {
-      const res = await fetch('/api/edicoes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.description || 'Erro ao criar edição.');
+      let payload;
+      if (imageFile) {
+        payload = new FormData();
+        payload.append('name', formData.name);
+        payload.append('description', formData.description);
+        payload.append('flavors', formData.flavors);
+        payload.append('image', imageFile);
+      } else {
+        payload = formData;
       }
-
+      await createEdicao(payload);
       navigate('/');
     } catch (err) {
       setError(err.message);
@@ -50,46 +54,22 @@ export default function AddEdicaoForm() {
       <h1>Nova Edição de Red Bull</h1>
       <form onSubmit={handleSubmit}>
         <label>
-          Nome:
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
+          Nome: <input type="text" name="name" value={formData.name} onChange={handleChange} required/>
         </label>
         <br />
 
         <label>
-          Descrição:
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-          />
+          Descrição: <textarea name="description" value={formData.description} onChange={handleChange}/>
         </label>
         <br />
 
         <label>
-          Sabores:
-          <input
-            type="text"
-            name="flavors"
-            value={formData.flavors}
-            onChange={handleChange}
-          />
+          Sabores: <input type="text" name="flavors" value={formData.flavors} onChange={handleChange}/>
         </label>
         <br />
 
         <label>
-          URL da imagem:
-          <input
-            type="text"
-            name="image_url"
-            value={formData.image_url}
-            onChange={handleChange}
-          />
+          Imagem: <input type="file" accept="image/*" onChange={handleFileChange}/>
         </label>
         <br />
 

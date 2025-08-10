@@ -1,20 +1,50 @@
-from flask import Blueprint, request, jsonify, abort
+import os
+from flask import Blueprint, request, jsonify, abort, current_app, url_for
 from .models import Edicao, Consumo
 from . import db
+from werkzeug.utils import secure_filename
 
 bp = Blueprint('api', __name__)
 
 @bp.route('/edicoes', methods=['GET'])
 def listar_edicoes():
-    edicoes = Edicao.query.all()
-    return jsonify([e.to_dict() for e in edicoes]), 200
+    edicoes = Edicao.query.order_by(Edicao.name.asc()).all()
+    output = []
+    for e in edicoes:
+        data = e.to_dict()
+        consumos = [c.to_dict() for c in e.consumos]
+        data['consumos'] = consumos
+        data['total_consumos'] = sum(c['number_of_cans'] for c in consumos)
+        output.append(data)
+    return jsonify(output), 200
 
 @bp.route('/edicoes', methods=['POST'])
 def criar_edicao():
-    data = request.get_json()
-    if not data.get('name'):
-        abort(400, description="O campo 'name' é obrigatório.")
-    e = Edicao(**data)
+    if 'image' in request.files:
+        form = request.form
+        name = form.get('name')
+        if not name:
+            abort(400, description="O campo 'name' é obrigatório.")
+        description = form.get('description')
+        flavors = form.get('flavors')
+        image = request.files['image']
+
+        upload_folder = os.path.join(current_app.static_folder, 'uploads')
+        os.makedirs(upload_folder, exist_ok=True)
+        filename = secure_filename(image.filename)
+        filepath = os.path.join(upload_folder, filename)
+        image.save(filepath)
+
+        image_url = url_for('static', filename=f'uploads/{filename}')
+        e = Edicao(name=name, description=description, flavors=flavors, image_url=image_url)
+    else:
+        if request.is_json:
+            data = request.get_json()
+        else:
+            data = request.form.to_dict()
+        if not data.get('name'):
+            abort(400, description="O campo 'name' é obrigatório.")
+        e = Edicao(**data)
     db.session.add(e)
     db.session.commit()
     return jsonify(e.to_dict()), 201
@@ -26,13 +56,32 @@ def get_edicao(id):
     result["consumos"] = [c.to_dict() for c in e.consumos]
     return jsonify(result), 200
 
-@bp.route('/edicoes/<int:id>', methods=['PUT'])
+@bp.route('/edicoes/<int:id>', methods=['PUT', 'POST']) 
 def update_edicao(id):
     e = Edicao.query.get_or_404(id)
-    data = request.get_json()
-    for key in ['name','description','flavors','image_url']:
-        if key in data:
-            setattr(e, key, data[key])
+
+    if 'image' in request.files:
+        form = request.form
+
+        if form.get('name'):
+            e.name = form.get('name')
+        if form.get('description') is not None:
+            e.description = form.get('description')
+        if form.get('flavors') is not None:
+            e.flavors = form.get('flavors')
+
+        image = request.files['image']
+        upload_folder = os.path.join(current_app.static_folder, 'uploads')
+        os.makedirs(upload_folder, exist_ok=True)
+        filename = secure_filename(image.filename)
+        filepath = os.path.join(upload_folder, filename)
+        image.save(filepath)
+        e.image_url = url_for('static', filename=f'uploads/{filename}')
+    else:
+        data = request.get_json(silent=True) or {}
+        for key in ['name', 'description', 'flavors']:
+            if key in data:
+                setattr(e, key, data[key])
     db.session.commit()
     return jsonify(e.to_dict()), 200
 

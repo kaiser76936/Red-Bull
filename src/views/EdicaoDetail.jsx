@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ConsumoForm from '../components/ConsumoForm';
+import { getEdicao } from '../api'; 
 
 export default function EdicaoDetail() {
   const { id } = useParams();
@@ -9,8 +10,7 @@ export default function EdicaoDetail() {
 
   const fetchEdicao = () => {
     setLoading(true);
-    fetch(`/api/edicoes/${id}`)
-      .then(res => res.json())
+    getEdicao(id)
       .then(data => {
         setEdicao(data);
         setLoading(false);

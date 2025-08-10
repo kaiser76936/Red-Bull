@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { registrarConsumo } from '../api'; 
 
 export default function ConsumoForm({ edicaoId, onSuccess }) {
   const [numberOfCans, setNumberOfCans] = useState('');
@@ -15,15 +16,7 @@ export default function ConsumoForm({ edicaoId, onSuccess }) {
     }
 
     try {
-      const res = await fetch(`/api/edicoes/${edicaoId}/consumos`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ number_of_cans: num }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.description || 'Erro ao registar consumo.');
-      }
+      await registrarConsumo(edicaoId, num);
       setNumberOfCans('');
       onSuccess && onSuccess();
     } catch (err) {
