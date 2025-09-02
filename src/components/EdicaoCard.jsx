@@ -10,7 +10,7 @@ export default function EdicaoCard({ edicao }) {
         <h2>{edicao.name}</h2>
         <p>{edicao.description}</p>
         <p><strong>Sabores:</strong> {edicao.flavors}</p>
-  <p><strong>Total consumos:</strong> {edicao.total_consumos ?? 0}</p>
+        <p><strong>{edicao.total_consumos}</strong></p>
         <Link to={`/edicoes/${edicao.id}`}>Ver detalhes</Link>
         <Link to={`/edicoes/${edicao.id}/edit`} style={{ marginLeft: '10px' }}>Editar</Link>
       </div>

@@ -10,6 +10,7 @@ bp = Blueprint('api', __name__)
 def listar_edicoes():
     edicoes = Edicao.query.order_by(Edicao.name.asc()).all()
     output = []
+
     for e in edicoes:
         data = e.to_dict()
         consumos = [c.to_dict() for c in e.consumos]
@@ -23,6 +24,7 @@ def criar_edicao():
     if 'image' in request.files:
         form = request.form
         name = form.get('name')
+
         if not name:
             abort(400, description="O campo 'name' é obrigatório.")
         description = form.get('description')
@@ -52,8 +54,10 @@ def criar_edicao():
 @bp.route('/edicoes/<int:id>', methods=['GET'])
 def get_edicao(id):
     e = Edicao.query.get_or_404(id)
+    consumos = [c.to_dict() for c in e.consumos]
     result = e.to_dict()
-    result["consumos"] = [c.to_dict() for c in e.consumos]
+    result["consumos"] = consumos
+    result["total_consumos"] = sum(c['number_of_cans'] for c in consumos)
     return jsonify(result), 200
 
 @bp.route('/edicoes/<int:id>', methods=['PUT', 'POST']) 
@@ -92,13 +96,20 @@ def delete_edicao(id):
     db.session.commit()
     return '', 204
 
-@bp.route('/edicoes/<int:id>/consumos', methods=['POST'])
-def registrar_consumo(id):
-    Edicao.query.get_or_404(id)
+@bp.route('/edicoes/<int:id>/consumos', methods=['POST', 'PUT', 'PATCH'])
+def registrar_ou_atualizar_consumo(id):
+    edicao = Edicao.query.get_or_404(id)
     data = request.get_json()
+
     if data.get('number_of_cans', 0) <= 0:
         abort(400, description="'number_of_cans' deve ser maior que zero.")
-    c = Consumo(edicao_id=id, number_of_cans=data['number_of_cans'])
-    db.session.add(c)
+
+    consumo = Consumo.query.filter_by(edicao_id=id).first()
+    if consumo:
+        consumo.number_of_cans = data['number_of_cans']
+    else:
+        consumo = Consumo(edicao_id=id, number_of_cans=data['number_of_cans'])
+        db.session.add(consumo)
+
     db.session.commit()
-    return jsonify(c.to_dict()), 201
+    return jsonify(consumo.to_dict()), 200

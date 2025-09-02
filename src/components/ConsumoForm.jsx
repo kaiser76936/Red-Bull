@@ -28,13 +28,7 @@ export default function ConsumoForm({ edicaoId, onSuccess }) {
     <form onSubmit={handleSubmit}>
       <label>
         Nº de latas consumidas:
-        <input
-          type="number"
-          value={numberOfCans}
-          onChange={e => setNumberOfCans(e.target.value)}
-          min="1"
-          required
-        />
+        <input type="number" value={numberOfCans} onChange={e => setNumberOfCans(e.target.value)} min="1" required/>
       </label>
       <button type="submit">Registar consumo</button>
       {error && <p style={{ color: 'red' }}>{error}</p>}

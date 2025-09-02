@@ -36,16 +36,11 @@ export default function EdicaoDetail() {
       <p>{edicao.description}</p>
       <p><strong>Sabores:</strong> {edicao.flavors}</p>
 
-      <h2>Consumos</h2>
-      <ul>
-        {edicao.consumos.length === 0 && <li>Nenhum consumo registado.</li>}
-        {edicao.consumos.map(c => (
-          <li key={c.id}>Latas consumidas: {c.number_of_cans}</li>
-        ))}
-      </ul>
+      <h2>Latas consumidas</h2>
+      <p><strong>{edicao.total_consumos}</strong></p>
 
       <h3>Registar novo consumo</h3>
-      <ConsumoForm edicaoId={id} onSuccess={fetchEdicao} />
+        <ConsumoForm edicaoId={id} onSuccess={fetchEdicao}/>
     </div>
   );
 }
