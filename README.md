@@ -11,6 +11,8 @@ Projeto pessoal de check de red bull
 | --------- | ------ |
 | SQL | 17 |
 | Python | 3.x |
+| Node.js | 18.x |
+| npm | 9.x |
 
 # Iniciar ou desligar SQL
 ```
@@ -49,9 +51,17 @@ Sistemas-Distribuidos/
 │   start.bat
 ├── .github/workflows/
 ├── api/
+    ├── app/
+    ├── migrations/
+    └──  SQL/
 ├── src/
     ├── assets/
     ├── components/
     ├── router/
-    └── views/
+    ├── styles/
+    ├── views/
+    ├── api.js/
+    ├── index.html/
+    ├── index.jsx/
+    └── vite.config.js/
 ```
